@@ -1,0 +1,10 @@
+body { background: #f8f9fb; }
+.navbar-brand { font-size: 1.05rem; }
+.card { border-radius: 0.65rem; }
+.footer { border-top: 1px solid #e9ecef; }
+/* small responsive tweaks */
+@media (max-width: 576px) {
+  #searchInput { width: 100% !important; }
+}
+.table td, .table th { vertical-align: middle; }
+.name-col { font-weight: 600; }
