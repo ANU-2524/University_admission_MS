@@ -1,7 +1,7 @@
-# University_admission_MS
+
 Project 1 University_admission_management_system ; Console.success !
 
-# University Admission Management System (CLI)
+# University Admission Management System (CLI + Web based )
 
 ## Advanced Features
 - Weighted merit ranking
