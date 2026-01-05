@@ -1,5 +1,6 @@
 
-Project 1 University_admission_management_system ; Console.success !
+&quot;This project was developed during the Winter Internship &#39;25
+at console.success.&quot;
 
 # University Admission Management System (CLI + Web based )
 
