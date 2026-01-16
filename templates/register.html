@@ -1,49 +1,117 @@
-{% extends 'base.html' %}
-
+{% extends "base.html" %}
 {% block content %}
 <div class="row justify-content-center">
-  <div class="col-md-8">
-    <div class="card shadow-sm">
-      <div class="card-body">
-        <h3 class="card-title">Register Applicant</h3>
-        <p class="text-muted small">Fill the applicant details carefully. Marks & entrance are 0–100.</p>
-        <form method="post">
-          <div class="row">
-            <div class="col-md-8 mb-3">
-              <label class="form-label">Name</label>
-              <input class="form-control" name="name" required placeholder="Full name">
+  <div class="col-lg-8">
+    <div class="card border-0 shadow-sm">
+      <div class="card-header bg-primary text-white p-4">
+        <div class="d-flex align-items-center">
+          <div class="bg-white bg-opacity-20 p-3 rounded-circle me-3">
+            <i class="fa-solid fa-user-graduate fa-2x"></i>
+          </div>
+          <div>
+            <h3 class="mb-0">Student Registration</h3>
+            <p class="mb-0 opacity-75">Complete the form below to apply for admission.</p>
+          </div>
+        </div>
+      </div>
+      <div class="card-body p-5">
+        <form method="POST" enctype="multipart/form-data">
+          <h5 class="mb-4 text-primary border-bottom pb-2">Personal Information</h5>
+          <div class="row g-4 mb-4">
+            <div class="col-md-8">
+              <label class="form-label fw-semibold">Full Name</label>
+              <div class="input-group">
+                <span class="input-group-text bg-light"><i class="fa-solid fa-user"></i></span>
+                <input type="text" name="name" class="form-control" placeholder="Enter full name" required>
+              </div>
             </div>
-            <div class="col-md-4 mb-3">
-              <label class="form-label">Age</label>
-              <input type="number" class="form-control" name="age" min="16" required placeholder="e.g. 18">
+            <div class="col-md-4">
+              <label class="form-label fw-semibold">Age</label>
+              <div class="input-group">
+                <span class="input-group-text bg-light"><i class="fa-solid fa-calendar"></i></span>
+                <input type="number" name="age" class="form-control" placeholder="18" required>
+              </div>
             </div>
           </div>
 
-          <div class="row">
-            <div class="col-md-6 mb-3">
-              <label class="form-label">12th Marks</label>
-              <input type="number" step="0.01" class="form-control" name="marks" min="0" max="100" required>
-            </div>
-            <div class="col-md-6 mb-3">
-              <label class="form-label">Entrance Score</label>
-              <input type="number" step="0.01" class="form-control" name="entrance" min="0" max="100" required>
+          <h5 class="mb-4 text-primary border-bottom pb-2">Account Security</h5>
+          <div class="row g-4 mb-4">
+            <div class="col-md-12">
+              <label class="form-label fw-semibold">Create Password</label>
+              <div class="input-group">
+                <span class="input-group-text bg-light"><i class="fa-solid fa-lock"></i></span>
+                <input type="password" name="password" class="form-control" placeholder="Choose a strong password"
+                  required>
+              </div>
+              <small class="text-muted">You will use this password to login and track your status.</small>
             </div>
           </div>
 
-          <div class="mb-3">
-            <label class="form-label">Department</label>
-            <select class="form-select" name="dept">
-              {% for d in departments %}
-                <option value="{{ d }}">{{ d }}</option>
-              {% endfor %}
-            </select>
+          <h5 class="mb-4 text-primary border-bottom pb-2">Academic Details</h5>
+          <div class="row g-4 mb-4">
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">12th Marks (%)</label>
+              <div class="input-group">
+                <span class="input-group-text bg-light"><i class="fa-solid fa-percent"></i></span>
+                <input type="number" step="0.01" name="marks" class="form-control" placeholder="e.g. 95.5" required>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">Entrance Score</label>
+              <div class="input-group">
+                <span class="input-group-text bg-light"><i class="fa-solid fa-star"></i></span>
+                <input type="number" step="0.01" name="entrance" class="form-control" placeholder="e.g. 88.0" required>
+              </div>
+            </div>
           </div>
 
-          <div class="d-flex gap-2">
-            <button class="btn btn-primary" type="submit"><i class="fa-solid fa-user-plus me-1"></i> Register</button>
-            <a class="btn btn-outline-secondary" href="/dashboard">Cancel</a>
+          <div class="row g-4 mb-4">
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">Category</label>
+              <select name="category" class="form-select">
+                <option value="General">General</option>
+                <option value="OBC">OBC</option>
+                <option value="SC">SC</option>
+                <option value="ST">ST</option>
+                <option value="EWS">EWS</option>
+              </select>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">Department Preferences</label>
+              <select name="prefs" class="form-select" multiple size="3" required>
+                {% for dept in departments %}
+                <option value="{{ dept }}">{{ dept }}</option>
+                {% endfor %}
+              </select>
+              <small class="text-muted mt-1 d-block"><i class="fa-solid fa-circle-info me-1"></i> Hold Ctrl (Cmd) to
+                select multiple in order.</small>
+            </div>
+          </div>
+
+          <h5 class="mb-4 text-primary border-bottom pb-2">Document Uploads</h5>
+          <div class="row g-4 mb-5">
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">12th Marksheet</label>
+              <input type="file" name="marksheet" class="form-control" required>
+              <small class="text-muted">PDF, PNG, or JPG allowed.</small>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">Entrance Scorecard</label>
+              <input type="file" name="scorecard" class="form-control" required>
+              <small class="text-muted">PDF, PNG, or JPG allowed.</small>
+            </div>
+          </div>
+
+          <div class="d-grid">
+            <button type="submit" class="btn btn-primary btn-lg shadow-sm">
+              <i class="fa-solid fa-paper-plane me-2"></i> Submit Application
+            </button>
           </div>
         </form>
+        <div class="text-center mt-4">
+          <p class="text-muted">Already have an account? <a href="{{ url_for('login') }}"
+              class="text-primary fw-bold text-decoration-none">Login here</a></p>
+        </div>
       </div>
     </div>
   </div>

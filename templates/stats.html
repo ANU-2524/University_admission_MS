@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+{% block content %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<div class="row mb-4">
+    <div class="col-md-8">
+        <div class="card p-4 h-100">
+            <h4 class="mb-3">Seat Fill Rate by Department</h4>
+            <canvas id="seatsChart"></canvas>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card p-4 h-100">
+            <h4 class="mb-3">Application Status</h4>
+            <canvas id="statusChart"></canvas>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        <div class="card p-4">
+            <h4 class="mb-3">Detailed Seat Stats</h4>
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>Department</th>
+                        <th>Total Seats</th>
+                        <th>Filled Seats</th>
+                        <th>Available</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for i in range(labels|length) %}
+                    <tr>
+                        <td>{{ labels[i] }}</td>
+                        <td>{{ total[i] }}</td>
+                        <td>{{ filled[i] }}</td>
+                        <td>{{ total[i] - filled[i] }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script>
+    const seatsCtx = document.getElementById('seatsChart').getContext('2d');
+    new Chart(seatsCtx, {
+        type: 'bar',
+        data: {
+            labels: {{ labels| tojson }},
+        datasets: [{
+            label: 'Filled Seats',
+            data: {{ filled| tojson }},
+        backgroundColor: 'rgba(30, 60, 114, 0.7)',
+        borderColor: 'rgba(30, 60, 114, 1)',
+        borderWidth: 1
+            }, {
+            label: 'Total Seats',
+            data: {{ total| tojson }},
+        backgroundColor: 'rgba(200, 200, 200, 0.3)',
+        borderColor: 'rgba(200, 200, 200, 1)',
+        borderWidth: 1
+            }]
+        },
+        options: {
+        responsive: true,
+        scales: { y: { beginAtZero: true } }
+    }
+    });
+
+    const statusCtx = document.getElementById('statusChart').getContext('2d');
+    new Chart(statusCtx, {
+        type: 'doughnut',
+        data: {
+            labels: {{ status_counts.keys() | list | tojson }},
+        datasets: [{
+            data: {{ status_counts.values() | list | tojson }},
+        backgroundColor: [
+            '#6c757d', '#ffc107', '#198754', '#0dcaf0', '#dc3545'
+        ]
+            }]
+        }
+    });
+</script>
+{% endblock %}

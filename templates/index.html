@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="row align-items-center py-5">
+    <div class="col-lg-6">
+        <h1 class="display-4 fw-bold mb-4">Your Future Starts Here.</h1>
+        <p class="lead text-muted mb-5">Join our world-class university. Apply now for the 2026 academic year and take
+            the first step towards a successful career.</p>
+
+        {% if reg_open %}
+        <div class="card border-0 shadow-sm p-4 mb-4 bg-primary text-white">
+            <h5 class="mb-3"><i class="fa-solid fa-clock me-2"></i>Registration Deadline</h5>
+            <div id="countdown" class="d-flex gap-3 text-center">
+                <div>
+                    <div class="h3 mb-0" id="days">00</div>
+                    <small class="opacity-75">Days</small>
+                </div>
+                <div>
+                    <div class="h3 mb-0" id="hours">00</div>
+                    <small class="opacity-75">Hours</small>
+                </div>
+                <div>
+                    <div class="h3 mb-0" id="minutes">00</div>
+                    <small class="opacity-75">Mins</small>
+                </div>
+                <div>
+                    <div class="h3 mb-0" id="seconds">00</div>
+                    <small class="opacity-75">Secs</small>
+                </div>
+            </div>
+        </div>
+        <a href="{{ url_for('register') }}" class="btn btn-primary btn-lg px-5 shadow">Apply Now</a>
+        {% else %}
+        <div class="alert alert-warning border-0 shadow-sm">
+            <h5 class="mb-0"><i class="fa-solid fa-circle-exclamation me-2"></i>Registration is currently closed.</h5>
+        </div>
+        {% endif %}
+    </div>
+    <div class="col-lg-6 d-none d-lg-block">
+        <img src="../static/admission.jpg"
+            alt="University" class="img-fluid rounded-4 shadow-lg">
+    </div>
+</div>
+
+<script>
+    const deadline = new Date("{{ deadline }}").getTime();
+    const timer = setInterval(function () {
+        const now = new Date().getTime();
+        const distance = deadline - now;
+
+        if (distance < 0) {
+            clearInterval(timer);
+            document.getElementById("countdown").innerHTML = "EXPIRED";
+            return;
+        }
+
+        document.getElementById("days").innerText = Math.floor(distance / (1000 * 60 * 60 * 24)).toString().padStart(2, '0');
+        document.getElementById("hours").innerText = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)).toString().padStart(2, '0');
+        document.getElementById("minutes").innerText = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60)).toString().padStart(2, '0');
+        document.getElementById("seconds").innerText = Math.floor((distance % (1000 * 60)) / 1000).toString().padStart(2, '0');
+    }, 1000);
+</script>
+{% endblock %}

@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="card border-0 shadow-sm">
+    <div class="card-header bg-white border-0 pt-4 px-4 d-flex justify-content-between align-items-center">
+        <h5 class="fw-bold mb-0"><i class="fa-solid fa-history me-2 text-primary"></i>System Audit Logs</h5>
+        <span class="badge bg-light text-muted border">Last 100 Actions</span>
+    </div>
+    <div class="card-body p-4">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle">
+                <thead class="table-light">
+                    <tr>
+                        <th>Timestamp</th>
+                        <th>User</th>
+                        <th>Action</th>
+                        <th>Details</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for log in logs %}
+                    <tr>
+                        <td class="text-muted small">{{ log[4] }}</td>
+                        <td><span class="fw-semibold">{{ log[1] }}</span></td>
+                        <td><span class="badge bg-info-subtle text-info border border-info-subtle">{{ log[2] }}</span>
+                        </td>
+                        <td class="small">{{ log[3] }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

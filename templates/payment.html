@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-6">
+        <div class="card border-0 shadow-lg overflow-hidden">
+            <div class="card-header bg-primary text-white p-4">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h4 class="mb-0">Secure Checkout</h4>
+                    <i class="fa-solid fa-shield-halved fa-2x opacity-50"></i>
+                </div>
+            </div>
+            <div class="card-body p-5">
+                <div class="mb-4 text-center">
+                    <h5 class="text-muted mb-1">Admission Fee</h5>
+                    <h2 class="fw-bold text-primary">₹ 25,000.00</h2>
+                    <p class="small text-muted">For {{ applicant.allocated_department }} Department</p>
+                </div>
+
+                <form method="POST">
+                    <div class="mb-4">
+                        <label class="form-label fw-semibold">Cardholder Name</label>
+                        <input type="text" class="form-control" value="{{ applicant.name }}" readonly>
+                    </div>
+                    <div class="mb-4">
+                        <label class="form-label fw-semibold">Card Number</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light"><i class="fa-solid fa-credit-card"></i></span>
+                            <input type="text" class="form-control" placeholder="4242 4242 4242 4242" required>
+                        </div>
+                    </div>
+                    <div class="row mb-5">
+                        <div class="col-6">
+                            <label class="form-label fw-semibold">Expiry Date</label>
+                            <input type="text" class="form-control" placeholder="MM/YY" required>
+                        </div>
+                        <div class="col-6">
+                            <label class="form-label fw-semibold">CVV</label>
+                            <input type="password" class="form-control" placeholder="***" required>
+                        </div>
+                    </div>
+
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-primary btn-lg shadow">
+                            <i class="fa-solid fa-lock me-2"></i> Pay Now
+                        </button>
+                    </div>
+                </form>
+
+                <div class="mt-4 text-center">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/5e/Visa_Inc._logo.svg/2560px-Visa_Inc._logo.svg.png"
+                        height="20" class="me-3 opacity-50">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/2a/Mastercard-logo.svg/1280px-Mastercard-logo.svg.png"
+                        height="20" class="opacity-50">
+                </div>
+            </div>
+        </div>
+        <div class="text-center mt-4">
+            <a href="{{ url_for('student_portal') }}" class="text-decoration-none text-muted small">
+                <i class="fa-solid fa-arrow-left me-1"></i> Cancel and Return
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

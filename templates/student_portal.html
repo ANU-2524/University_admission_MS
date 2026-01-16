@@ -1,0 +1,163 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="row">
+    <div class="col-lg-4">
+        <div class="card border-0 shadow-sm mb-4">
+            <div class="card-body text-center p-5">
+                <div class="bg-primary bg-opacity-10 p-4 rounded-circle d-inline-flex mb-3">
+                    <i class="fa-solid fa-user-graduate fa-3x text-primary"></i>
+                </div>
+                <h4 class="fw-bold mb-1">{{ applicant.name }}</h4>
+                <p class="text-muted mb-3">Application ID: #{{ applicant.id }}</p>
+                <span
+                    class="badge {% if applicant.admission_status == 'Confirmed' %}bg-success{% elif applicant.admission_status == 'Selected' %}bg-warning text-dark{% else %}bg-secondary{% endif %} px-3 py-2">
+                    {{ applicant.admission_status }}
+                </span>
+            </div>
+        </div>
+
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-white border-0 pt-4 px-4">
+                <h5 class="fw-bold mb-0">Application Progress</h5>
+            </div>
+            <div class="card-body p-4">
+                <div class="d-flex flex-column gap-4">
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="bg-success text-white rounded-circle d-flex align-items-center justify-content-center"
+                            style="width: 32px; height: 32px;">
+                            <i class="fa-solid fa-check small"></i>
+                        </div>
+                        <div>
+                            <p class="mb-0 fw-semibold">Registration</p>
+                            <small class="text-muted">Completed</small>
+                        </div>
+                    </div>
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="{% if applicant.rank %}bg-success text-white{% else %}bg-light text-muted{% endif %} rounded-circle d-flex align-items-center justify-content-center"
+                            style="width: 32px; height: 32px;">
+                            <i class="fa-solid {% if applicant.rank %}fa-check{% else %}fa-circle{% endif %} small"></i>
+                        </div>
+                        <div>
+                            <p class="mb-0 fw-semibold">Merit Ranking</p>
+                            <small class="text-muted">{% if applicant.rank %}Ranked #{{ applicant.rank }}{% else
+                                %}Pending{% endif %}</small>
+                        </div>
+                    </div>
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="{% if applicant.admission_status in ['Selected', 'Confirmed'] %}bg-success text-white{% else %}bg-light text-muted{% endif %} rounded-circle d-flex align-items-center justify-content-center"
+                            style="width: 32px; height: 32px;">
+                            <i
+                                class="fa-solid {% if applicant.admission_status in ['Selected', 'Confirmed'] %}fa-check{% else %}fa-circle{% endif %} small"></i>
+                        </div>
+                        <div>
+                            <p class="mb-0 fw-semibold">Seat Allocation</p>
+                            <small class="text-muted">{% if applicant.allocated_department %}Allocated: {{
+                                applicant.allocated_department }}{% else %}Pending{% endif %}</small>
+                        </div>
+                    </div>
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="{% if applicant.fee_status == 'Paid' %}bg-success text-white{% else %}bg-light text-muted{% endif %} rounded-circle d-flex align-items-center justify-content-center"
+                            style="width: 32px; height: 32px;">
+                            <i
+                                class="fa-solid {% if applicant.fee_status == 'Paid' %}fa-check{% else %}fa-circle{% endif %} small"></i>
+                        </div>
+                        <div>
+                            <p class="mb-0 fw-semibold">Fee Payment</p>
+                            <small class="text-muted">{{ applicant.fee_status }}</small>
+                        </div>
+                    </div>
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="{% if applicant.admission_status == 'Confirmed' %}bg-success text-white{% else %}bg-light text-muted{% endif %} rounded-circle d-flex align-items-center justify-content-center"
+                            style="width: 32px; height: 32px;">
+                            <i
+                                class="fa-solid {% if applicant.admission_status == 'Confirmed' %}fa-check{% else %}fa-circle{% endif %} small"></i>
+                        </div>
+                        <div>
+                            <p class="mb-0 fw-semibold">Final Confirmation</p>
+                            <small class="text-muted">{% if applicant.admission_status == 'Confirmed' %}Admission
+                                Confirmed{% else %}Pending{% endif %}</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-8">
+        <div class="card border-0 shadow-sm mb-4">
+            <div class="card-header bg-white border-0 pt-4 px-4">
+                <h5 class="fw-bold mb-0">Next Steps</h5>
+            </div>
+            <div class="card-body p-4">
+                {% if applicant.admission_status == 'Applied' %}
+                <div class="alert alert-info border-0 shadow-sm">
+                    <h6 class="fw-bold"><i class="fa-solid fa-info-circle me-2"></i>Application Submitted</h6>
+                    <p class="mb-0 small">Your application is currently being processed. Please wait for the merit list
+                        to be generated.</p>
+                </div>
+                {% elif applicant.admission_status == 'Waiting' %}
+                <div class="alert alert-warning border-0 shadow-sm">
+                    <h6 class="fw-bold"><i class="fa-solid fa-clock me-2"></i>On Waiting List</h6>
+                    <p class="mb-0 small">You are currently on the waiting list. We will notify you if a seat becomes
+                        available in your preferred department.</p>
+                </div>
+                {% elif applicant.admission_status == 'Selected' and applicant.fee_status == 'Unpaid' %}
+                <div class="alert alert-success border-0 shadow-sm">
+                    <h6 class="fw-bold"><i class="fa-solid fa-star me-2"></i>Congratulations! You've been Selected</h6>
+                    <p class="mb-3 small">You have been provisionally selected for the <strong>{{
+                            applicant.allocated_department }}</strong> department. Please pay the admission fee to
+                        proceed.</p>
+                    <a href="{{ url_for('payment') }}" class="btn btn-success btn-sm">Pay Admission Fee</a>
+                </div>
+                {% elif applicant.admission_status == 'Selected' and applicant.fee_status == 'Paid' %}
+                <div class="alert alert-info border-0 shadow-sm">
+                    <h6 class="fw-bold"><i class="fa-solid fa-file-shield me-2"></i>Fee Paid - Verification Pending</h6>
+                    <p class="mb-0 small">Your fee has been received. Our team is now verifying your documents. You will
+                        receive a final confirmation soon.</p>
+                </div>
+                {% elif applicant.admission_status == 'Confirmed' %}
+                <div class="alert alert-success border-0 shadow-sm">
+                    <h6 class="fw-bold"><i class="fa-solid fa-circle-check me-2"></i>Admission Confirmed!</h6>
+                    <p class="mb-3 small">Welcome to the university! Your admission to the <strong>{{
+                            applicant.allocated_department }}</strong> department is now official.</p>
+                    <a href="{{ url_for('download_letter', app_id=applicant.id) }}" class="btn btn-primary btn-sm"><i
+                            class="fa-solid fa-download me-1"></i>Download Admission Letter</a>
+                </div>
+                {% elif applicant.admission_status == 'Cancelled' %}
+                <div class="alert alert-danger border-0 shadow-sm">
+                    <h6 class="fw-bold"><i class="fa-solid fa-circle-xmark me-2"></i>Admission Cancelled</h6>
+                    <p class="mb-0 small">We regret to inform you that your admission has been cancelled due to document
+                        verification failure.</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-white border-0 pt-4 px-4">
+                <h5 class="fw-bold mb-0">Your Details</h5>
+            </div>
+            <div class="card-body p-4">
+                <div class="row g-4">
+                    <div class="col-md-6">
+                        <label class="text-muted small d-block">12th Marks</label>
+                        <span class="fw-semibold">{{ applicant.marks_12 }}%</span>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="text-muted small d-block">Entrance Score</label>
+                        <span class="fw-semibold">{{ applicant.entrance_score }}</span>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="text-muted small d-block">Category</label>
+                        <span class="fw-semibold">{{ applicant.category }}</span>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="text-muted small d-block">Preferences</label>
+                        <span class="fw-semibold">{{ applicant.preferences|join(', ') }}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -4,19 +4,15 @@ at console.success.&quot;
 
 # University Admission Management System (CLI + Web based )
 
-## Advanced Features
-- Weighted merit ranking
-- Waiting list & seat reallocation
-- Input validation
-- State-based workflow
-- Event-driven notifications
-
-## Concepts Demonstrated
-- Sorting algorithms
-- Greedy allocation
-- State machines
-- Defensive programming
-- System design thinking
+## Advanced Features (Pro Version)
+- **Multi-Preference Allocation**: Students can select multiple departments in order of preference.
+- **Role-Based Authentication**: Secure Admin login for managing admissions and analytics.
+- **Document Management**: Integrated file upload for marksheets and scorecards with admin verification.
+- **Quota & Reservation System**: Category-based seat reservation (General, OBC, SC, ST, EWS).
+- **Real-Time Notifications**: Automated email notifications via Flask-Mail.
+- **Analytics Dashboard**: Visual data representation of seat filling and application statuses using Chart.js.
+- **PDF Admission Letters**: Automated generation of official admission letters for confirmed students.
+- **Advanced Search & Filter**: Server-side filtering by name and application status.
 
 # University Admission Management System
 

@@ -1,39 +1,90 @@
-{% extends 'base.html' %}
-
+{% extends "base.html" %}
 {% block content %}
-<div class="d-flex justify-content-between align-items-center mb-3">
-  <div>
-    <h2 class="mb-0">Verify Documents</h2>
-    <small class="text-muted">Approve or reject applicant documents</small>
+<div class="card border-0 shadow-sm">
+  <div class="card-header bg-primary text-white p-4">
+    <div class="d-flex align-items-center">
+      <div class="bg-white bg-opacity-20 p-3 rounded-3 me-3">
+        <i class="fa-solid fa-file-circle-check fa-2x"></i>
+      </div>
+      <div>
+        <h3 class="mb-0">Document Verification</h3>
+        <p class="mb-0 opacity-75">Review and approve student documents for final admission.</p>
+      </div>
+    </div>
   </div>
-  <div>
-    <a class="btn btn-outline-secondary" href="/dashboard">Back to Dashboard</a>
+  <div class="p-4">
+    {% if not selected %}
+    <div class="text-center py-5">
+      <div class="bg-light rounded-circle p-4 d-inline-flex mb-3">
+        <i class="fa-solid fa-clipboard-check text-muted fa-3x"></i>
+      </div>
+      <h5 class="text-muted">All caught up!</h5>
+      <p class="text-muted">There are no pending document verifications at this time.</p>
+    </div>
+    {% else %}
+    <div class="table-responsive">
+      <table class="table table-hover align-middle">
+        <thead>
+          <tr>
+            <th>Applicant</th>
+            <th>Allocated Dept</th>
+            <th>Uploaded Documents</th>
+            <th class="text-end">Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for a in selected %}
+          <tr>
+            <td>
+              <div class="fw-bold">{{ a.name }}</div>
+              <span class="badge bg-light text-dark border small">{{ a.category }}</span>
+            </td>
+            <td>
+              <span class="text-primary fw-medium"><i class="fa-solid fa-building-columns me-1 small"></i> {{
+                a.allocated_department }}</span>
+            </td>
+            <td>
+              <div class="d-flex gap-2">
+                {% if a.marksheet_path %}
+                <a href="/{{ a.marksheet_path }}" target="_blank" class="btn btn-sm btn-outline-secondary">
+                  <i class="fa-solid fa-file-pdf me-1"></i> Marksheet
+                </a>
+                {% endif %}
+                {% if a.scorecard_path %}
+                <a href="/{{ a.scorecard_path }}" target="_blank" class="btn btn-sm btn-outline-secondary">
+                  <i class="fa-solid fa-id-card me-1"></i> Scorecard
+                </a>
+                {% endif %}
+              </div>
+            </td>
+            <td class="text-end">
+              <form action="{{ url_for('verify_action', app_id=a.id) }}" method="POST" class="d-inline">
+                <button name="action" value="ocr" class="btn btn-outline-info btn-sm px-3 shadow-sm me-1"
+                  title="Verify marks using AI OCR">
+                  <i class="fa-solid fa-robot me-1"></i> OCR
+                </button>
+                <button name="action" value="approve" class="btn btn-success btn-sm px-3 shadow-sm me-1">
+                  <i class="fa-solid fa-check me-1"></i> Approve
+                </button>
+                <button name="action" value="reject" class="btn btn-danger btn-sm px-3 shadow-sm">
+                  <i class="fa-solid fa-xmark me-1"></i> Reject
+                </button>
+              </form>
+            </td>
+          </tr>
+          {% if a.ocr_verified %}
+          <tr class="table-info">
+            <td colspan="4" class="py-1 small">
+              <i class="fa-solid fa-circle-check me-1 text-success"></i> <span class="text-muted">AI OCR verified: Marks
+                match the document.</span>
+            </td>
+          </tr>
+          {% endif %}
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% endif %}
   </div>
 </div>
-
-{% if not selected %}
-  <div class="alert alert-info">No selected applicants to verify.</div>
-{% else %}
-  <div class="list-group">
-    {% for a in selected %}
-      <div class="list-group-item d-flex justify-content-between align-items-center">
-        <div>
-          <div class="fw-bold">{{ a.name }} <small class="text-muted">(#{{ a.id }})</small></div>
-          <div class="text-muted">Department: <strong>{{ a.allocated_department }}</strong> • Score: {{ '%.2f'|format(a.final_score) }}</div>
-        </div>
-        <div class="btn-group">
-          <form method="post" action="/verify/{{ a.id }}" onsubmit="return confirmApprove();" style="display:inline">
-            <input type="hidden" name="action" value="approve">
-            <button class="btn btn-success btn-sm" type="submit"><i class="fa-solid fa-check me-1"></i>Approve</button>
-          </form>
-          <form method="post" action="/verify/{{ a.id }}" onsubmit="return confirmReject();" style="display:inline">
-            <input type="hidden" name="action" value="reject">
-            <button class="btn btn-danger btn-sm" type="submit"><i class="fa-solid fa-xmark me-1"></i>Reject</button>
-          </form>
-        </div>
-      </div>
-    {% endfor %}
-  </div>
-{% endif %}
-
 {% endblock %}

@@ -1,73 +1,164 @@
-{% extends 'base.html' %}
-
+{% extends "base.html" %}
 {% block content %}
-<div class="d-flex justify-content-between align-items-center mb-3">
-  <div>
-    <h2 class="mb-0">Dashboard</h2>
-    <small class="text-muted">Overview of applicants and allocations</small>
-  </div>
-  <div class="d-flex gap-2">
-    <input id="searchInput" class="form-control form-control-sm" placeholder="Search applicants by name" style="min-width:280px">
-  </div>
-</div>
-
-<div class="row mb-4">
-  {% for name, d in departments.items() %}
-    <div class="col-sm-4 mb-2">
-      <div class="card shadow-sm">
-        <div class="card-body">
-          <h5 class="card-title">{{ name }}</h5>
-          <p class="card-text">Seats: <strong>{{ d.available_seats }}</strong> / {{ d.total_seats }}</p>
-        </div>
+<div class="row g-4 mb-5">
+  <div class="col-md-3">
+    <div class="card stat-card border-0">
+      <div class="stat-icon bg-primary bg-opacity-10 text-primary">
+        <i class="fa-solid fa-users"></i>
+      </div>
+      <div>
+        <p class="stat-label">Total Applicants</p>
+        <h3 class="stat-value">{{ applicants|length }}</h3>
       </div>
     </div>
-  {% endfor %}
+  </div>
+  <div class="col-md-3">
+    <div class="card stat-card border-0">
+      <div class="stat-icon bg-success bg-opacity-10 text-success">
+        <i class="fa-solid fa-user-check"></i>
+      </div>
+      <div>
+        <p class="stat-label">Confirmed</p>
+        <h3 class="stat-value">{{ applicants|selectattr('admission_status', 'equalto', 'Confirmed')|list|length }}</h3>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div class="card stat-card border-0">
+      <div class="stat-icon bg-warning bg-opacity-10 text-warning">
+        <i class="fa-solid fa-clock"></i>
+      </div>
+      <div>
+        <p class="stat-label">Waiting List</p>
+        <h3 class="stat-value">{{ applicants|selectattr('admission_status', 'equalto', 'Waiting')|list|length }}</h3>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div class="card stat-card border-0">
+      <div class="stat-icon bg-info bg-opacity-10 text-info">
+        <i class="fa-solid fa-building-columns"></i>
+      </div>
+      <div>
+        <p class="stat-label">Departments</p>
+        <h3 class="stat-value">{{ departments|length }}</h3>
+      </div>
+    </div>
+  </div>
 </div>
 
-<div class="table-responsive">
-  <table id="applicantsTable" class="table table-hover align-middle">
-    <thead class="table-light">
-      <tr>
-        <th>ID</th><th>Name</th><th>Age</th><th>Score</th><th>Rank</th><th>Pref.</th><th>Allocated</th><th>Status</th><th>Docs</th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for a in applicants %}
-        <tr>
-          <td>{{ a.id }}</td>
-          <td class="name-col">{{ a.name }}</td>
-          <td>{{ a.age }}</td>
-          <td>{{ '%.2f'|format(a.final_score) }}</td>
-          <td>{{ a.rank or '' }}</td>
-          <td>{{ a.preferred_department }}</td>
-          <td>{{ a.allocated_department or '' }}</td>
-          <td>
-            {% if a.admission_status == 'Selected' %}
-              <span class="badge bg-success">Selected</span>
-            {% elif a.admission_status == 'Waiting' %}
-              <span class="badge bg-warning text-dark">Waiting</span>
-            {% elif a.admission_status == 'Rejected' %}
-              <span class="badge bg-danger">Rejected</span>
-            {% elif a.admission_status == 'Confirmed' %}
-              <span class="badge bg-primary">Confirmed</span>
-            {% else %}
-              <span class="badge bg-secondary">{{ a.admission_status }}</span>
-            {% endif %}
-          </td>
-          <td>
-            {% if a.document_status == 'Verified' %}
-              <span class="text-success">Verified</span>
-            {% elif a.document_status == 'Rejected' %}
-              <span class="text-danger">Rejected</span>
-            {% elif a.document_status == 'Pending' %}
-              <span class="text-muted">Pending</span>
-            {% else %}
+<div class="card border-0 shadow-sm">
+  <div class="card-header d-flex justify-content-between align-items-center">
+    <h5 class="mb-0">Applicant Records</h5>
+    <div class="d-flex gap-2">
+      {% if current_user.is_authenticated and current_user.role == 'admin' %}
+      <a href="{{ url_for('generate') }}" class="btn btn-outline-primary btn-sm">
+        <i class="fa-solid fa-calculator me-1"></i> Generate Merit
+      </a>
+      <a href="{{ url_for('allocate') }}" class="btn btn-primary btn-sm">
+        <i class="fa-solid fa-bolt me-1"></i> Run Allocation
+      </a>
+      {% endif %}
+    </div>
+  </div>
+  <div class="p-4">
+    <form class="row g-3 mb-4" method="GET">
+      <div class="col-md-6">
+        <div class="input-group">
+          <span class="input-group-text bg-white border-end-0"><i class="fa-solid fa-search text-muted"></i></span>
+          <input type="text" name="search" class="form-control border-start-0" placeholder="Search by name..."
+            value="{{ request.args.get('search', '') }}">
+        </div>
+      </div>
+      <div class="col-md-4">
+        <select name="status" class="form-select">
+          <option value="">All Statuses</option>
+          <option value="Applied" {% if request.args.get('status')=='Applied' %}selected{% endif %}>Applied</option>
+          <option value="Selected" {% if request.args.get('status')=='Selected' %}selected{% endif %}>Selected</option>
+          <option value="Confirmed" {% if request.args.get('status')=='Confirmed' %}selected{% endif %}>Confirmed
+          </option>
+          <option value="Waiting" {% if request.args.get('status')=='Waiting' %}selected{% endif %}>Waiting</option>
+          <option value="Cancelled" {% if request.args.get('status')=='Cancelled' %}selected{% endif %}>Cancelled
+          </option>
+        </select>
+      </div>
+      <div class="col-md-2">
+        <button type="submit" class="btn btn-secondary w-100">Filter</button>
+      </div>
+    </form>
+
+    <div class="table-responsive">
+      <table class="table table-hover">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Applicant Name</th>
+            <th>Category</th>
+            <th>Rank</th>
+            <th>Status</th>
+            <th>Allocated Dept</th>
+            <th class="text-end">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for a in applicants %}
+          <tr>
+            <td><span class="text-muted">#{{ a.id }}</span></td>
+            <td>
+              <div class="d-flex align-items-center">
+                <div class="bg-light rounded-circle p-2 me-2 d-flex align-items-center justify-content-center"
+                  style="width: 32px; height: 32px;">
+                  <i class="fa-solid fa-user text-primary small"></i>
+                </div>
+                <span class="fw-semibold">{{ a.name }}</span>
+              </div>
+            </td>
+            <td><span class="badge bg-light text-dark border">{{ a.category }}</span></td>
+            <td><span class="fw-bold">{{ a.rank if a.rank else '-' }}</span></td>
+            <td>
+              {% if a.admission_status == 'Confirmed' %}
+              <span class="badge bg-success-subtle text-success border border-success-subtle">Confirmed</span>
+              {% elif a.admission_status == 'Selected' %}
+              <span class="badge bg-warning-subtle text-warning border border-warning-subtle">Selected</span>
+              {% elif a.admission_status == 'Waiting' %}
+              <span class="badge bg-info-subtle text-info border border-info-subtle">Waiting</span>
+              {% elif a.admission_status == 'Cancelled' %}
+              <span class="badge bg-danger-subtle text-danger border border-danger-subtle">Cancelled</span>
+              {% else %}
+              <span class="badge bg-secondary-subtle text-secondary border border-secondary-subtle">Applied</span>
+              {% endif %}
+            </td>
+            <td>
+              {% if a.allocated_department %}
+              <span class="text-primary fw-medium">{{ a.allocated_department }}</span>
+              {% else %}
               <span class="text-muted">-</span>
-            {% endif %}
-          </td>
-        </tr>
-      {% endfor %}
-    </tbody>
-  </table>
+              {% endif %}
+            </td>
+            <td class="text-end">
+              {% if a.admission_status == 'Confirmed' %}
+              <a href="{{ url_for('download_letter', app_id=a.id) }}" class="btn btn-light btn-sm border">
+                <i class="fa-solid fa-download me-1"></i> Letter
+              </a>
+              {% else %}
+              <button class="btn btn-light btn-sm border disabled" title="Available after confirmation">
+                <i class="fa-solid fa-lock me-1"></i> Letter
+              </button>
+              {% endif %}
+            </td>
+          </tr>
+          {% else %}
+          <tr>
+            <td colspan="7" class="text-center py-5">
+              <i class="fa-solid fa-folder-open text-muted mb-3 d-block" style="font-size: 3rem;"></i>
+              <p class="text-muted">No applicants found matching your criteria.</p>
+              <a href="{{ url_for('register') }}" class="btn btn-primary btn-sm">Register New Student</a>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
 </div>
 {% endblock %}

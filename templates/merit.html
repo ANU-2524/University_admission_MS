@@ -1,32 +1,72 @@
-{% extends 'base.html' %}
-
+{% extends "base.html" %}
 {% block content %}
-<div class="d-flex justify-content-between align-items-center mb-3">
-  <div>
-    <h2 class="mb-0">Merit List</h2>
-    <small class="text-muted">Ranked by final computed score</small>
+<div class="card border-0 shadow-sm overflow-hidden">
+  <div class="card-header bg-primary text-white p-4 d-flex justify-content-between align-items-center">
+    <div>
+      <h3 class="mb-1">Merit List</h3>
+      <p class="mb-0 opacity-75">Ranked by Final Score (60% 12th Marks + 40% Entrance)</p>
+    </div>
+    <div class="bg-white bg-opacity-20 p-3 rounded-3">
+      <i class="fa-solid fa-ranking-star fa-2x"></i>
+    </div>
   </div>
-  <div>
-    <a class="btn btn-outline-primary" href="/generate"><i class="fa-solid fa-arrows-rotate me-1"></i>Recompute</a>
-  </div>
-</div>
-
-<div class="card shadow-sm">
-  <div class="card-body p-0">
+  <div class="p-0">
     <div class="table-responsive">
-      <table class="table table-striped mb-0">
-        <thead class="table-light">
-          <tr><th>Rank</th><th>Name</th><th>Final Score</th><th>Age</th><th>Preferred Dept</th></tr>
+      <table class="table table-hover align-middle">
+        <thead>
+          <tr>
+            <th class="ps-4">Rank</th>
+            <th>Applicant</th>
+            <th>12th Marks</th>
+            <th>Entrance</th>
+            <th>Final Score</th>
+            <th>Category</th>
+            <th class="pe-4">Status</th>
+          </tr>
         </thead>
         <tbody>
           {% for a in applicants %}
-            <tr>
-              <td>{{ a.rank }}</td>
-              <td>{{ a.name }}</td>
-              <td>{{ '%.2f'|format(a.final_score) }}</td>
-              <td>{{ a.age }}</td>
-              <td>{{ a.preferred_department }}</td>
-            </tr>
+          <tr {% if a.rank and a.rank <=3 %}class="bg-warning bg-opacity-10" {% endif %}>
+            <td class="ps-4">
+              {% if a.rank == 1 %}
+              <span class="badge bg-warning text-dark"><i class="fa-solid fa-crown me-1"></i> #1</span>
+              {% elif a.rank == 2 %}
+              <span class="badge bg-secondary text-white">#2</span>
+              {% elif a.rank == 3 %}
+              <span class="badge bg-danger bg-opacity-75 text-white">#3</span>
+              {% else %}
+              <span class="fw-bold text-muted">#{{ a.rank if a.rank else '-' }}</span>
+              {% endif %}
+            </td>
+            <td>
+              <div class="fw-semibold">{{ a.name }}</div>
+              <small class="text-muted">ID: {{ a.id }}</small>
+            </td>
+            <td>{{ a.marks_12 }}%</td>
+            <td>{{ a.entrance_score }}</td>
+            <td>
+              <div class="progress" style="height: 8px; width: 100px;">
+                <div class="progress-bar bg-primary" role="progressbar" style="width: {{ a.final_score }}%"></div>
+              </div>
+              <span class="fw-bold text-primary small">{{ "%.2f"|format(a.final_score) }}</span>
+            </td>
+            <td><span class="badge bg-light text-dark border">{{ a.category }}</span></td>
+            <td class="pe-4">
+              {% if a.admission_status == 'Confirmed' %}
+              <span class="text-success small fw-bold"><i class="fa-solid fa-check-circle me-1"></i> Confirmed</span>
+              {% elif a.admission_status == 'Selected' %}
+              <span class="text-warning small fw-bold"><i class="fa-solid fa-circle-dot me-1"></i> Selected</span>
+              {% else %}
+              <span class="text-muted small">{{ a.admission_status }}</span>
+              {% endif %}
+            </td>
+          </tr>
+          {% else %}
+          <tr>
+            <td colspan="7" class="text-center py-5 text-muted">
+              No merit list generated yet.
+            </td>
+          </tr>
           {% endfor %}
         </tbody>
       </table>

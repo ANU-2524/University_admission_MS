@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="row">
+    <div class="col-lg-8">
+        <div class="card border-0 shadow-sm mb-4">
+            <div class="card-header bg-white border-0 pt-4 px-4">
+                <h5 class="fw-bold mb-0"><i class="fa-solid fa-gears me-2 text-primary"></i>System Settings</h5>
+            </div>
+            <div class="card-body p-4">
+                <form method="POST">
+                    <div class="row g-4 mb-4">
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold">Registration Status</label>
+                            <select name="reg_open" class="form-select">
+                                <option value="true" {% if settings.reg_open=='true' %}selected{% endif %}>Open</option>
+                                <option value="false" {% if settings.reg_open=='false' %}selected{% endif %}>Closed
+                                </option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold">Registration Deadline</label>
+                            <input type="datetime-local" name="deadline" class="form-control"
+                                value="{{ settings.deadline }}">
+                        </div>
+                    </div>
+                    <hr class="my-4">
+                    <h6 class="fw-bold mb-3">Add New Department</h6>
+                    <div class="row g-4 mb-4">
+                        <div class="col-md-8">
+                            <input type="text" name="new_dept_name" class="form-control"
+                                placeholder="Department Name (e.g. AI & ML)">
+                        </div>
+                        <div class="col-md-4">
+                            <input type="number" name="new_dept_seats" class="form-control" placeholder="Total Seats">
+                        </div>
+                    </div>
+                    <div class="d-flex justify-content-end">
+                        <button type="submit" class="btn btn-primary">Save Changes</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-white border-0 pt-4 px-4">
+                <h5 class="fw-bold mb-0"><i class="fa-solid fa-building-columns me-2 text-primary"></i>Existing
+                    Departments</h5>
+            </div>
+            <div class="card-body p-4">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Department</th>
+                                <th>Total Seats</th>
+                                <th>Available</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for name, dept in departments.items() %}
+                            <tr>
+                                <td class="fw-semibold">{{ name }}</td>
+                                <td>{{ dept.total_seats }}</td>
+                                <td>{{ dept.available_seats }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-4">
+        <div class="card border-0 shadow-sm bg-primary text-white">
+            <div class="card-body p-4">
+                <h5 class="fw-bold mb-3">Quick Actions</h5>
+                <div class="d-grid gap-2">
+                    <a href="{{ url_for('admin_logs') }}" class="btn btn-light text-primary"><i
+                            class="fa-solid fa-list-check me-2"></i>View Audit Logs</a>
+                    <a href="{{ url_for('export_data') }}" class="btn btn-light text-primary"><i
+                            class="fa-solid fa-file-excel me-2"></i>Export All Data</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
